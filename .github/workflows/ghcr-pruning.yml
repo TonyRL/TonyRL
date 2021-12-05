@@ -1,0 +1,22 @@
+name: "GHCR-Pruning"
+
+on:
+  schedule:
+    - cron: '45 22 * * *'
+  workflow_dispatch:
+
+jobs:
+  prune:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        containers: [docker-notify, postgres, pycurl, qiandao, qiandao-py2, rsshub, torsniff, transmission-skip-hash-check, vlmcsd, zerotier, zerotier-base]
+    steps:
+    - name: Prune
+      uses: vlaurin/action-ghcr-prune@main
+      with:
+        token: ${{ secrets.GHCR_PRUNE_TOKEN }}
+        container: ${{ matrix.containers }}
+        older-than: 3 # days
+        keep-last: 2
+        untagged: true
